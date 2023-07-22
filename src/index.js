@@ -1,7 +1,7 @@
 
 import 'dotenv/config'
 import fetch from "node-fetch"
-import {Client, IntentsBitField} from 'discord.js'
+import {Client, GuildMember, IntentsBitField} from 'discord.js'
 
 // Discord API
 // Client is the bot
@@ -17,64 +17,37 @@ const client = new Client({
 // Fetching chuck norris jokes
 let url = 'https://api.chucknorris.io/jokes/random';
 
-// api host
-const me = '349343589328879619'
+// main 
+const TrustierSquid = '349343589328879619'
 
+// text channels
 // channel ids
 const general = '839630552990351411'
 const botSpam = '1107806901233795212'
 
-// text channels
 
+let callJoke = () => {
 
+    // tells a joke every hour
+    setInterval(()=> {
+        let norris = fetch('https://api.chucknorris.io/jokes/random')
+        .then((res)=> res.json())
+        .then((data) => {
+            const channel = client.channels.cache.get(general);
+            channel.send(data.value)
 
-async function fetchJokes(){
-    let response = await fetch(url)
-        .then(res => res.json())
-        .then(data => {
-            client.on("messageCreate", (message)=> {
-                console.log(message.author.username + " Just sent a message " + message.author.id)
-
-                switch (message.content) {
-                    case "/telljoke":
-                        message.reply(data.value);
-                        break;
-                    case "/repo":
-                        message.reply("Here's my repo ya fatty" + " https://github.com/TrustierSquid/Chuckie");
-                        break;
-                    case "arch":
-                        message.reply("I use arch btw");
-                        break
-                    case "Meloetta":
-                        message.reply("Meloetta kinda bad tho");
-                        break;
-                    default:
-                        return
-                }
-            })
-            
         })
-            
-        .catch(err => console.log("That api didnt work"))
-
+    
+    }, 3600000)	
 }
     
-    
-    
 client.on('ready', (c)=> {
-    // getting the id for the channel that the messeage gets sent too
-    const channel = client.channels.cache.get(general);
-
-    // When chuckie is activated, he will greet everyone
     console.log("I'm Ready! " + c.user.tag);
-    // channel.send("Hello everyone!")
+    callJoke()
 
-    
 });
 
 
-
 client.login(process.env.TOKEN);
-fetchJokes();
     
     
